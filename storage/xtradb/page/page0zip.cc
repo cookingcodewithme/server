@@ -3034,6 +3034,13 @@ page_zip_decompress(
 	} else {
 		/* Check that the bytes that we skip are identical. */
 #if defined UNIV_DEBUG || defined UNIV_ZIP_DEBUG
+		/* Field FIL_PAGE_FILE_FLUSH_LSN_OR_KEY_VERSION is repurposed
+		in encryption to key_version and post encryption checksum.
+		Copy this mutable field before checking. */
+		memcpy(page_zip->data + FIL_PAGE_FILE_FLUSH_LSN_OR_KEY_VERSION,
+		       page + FIL_PAGE_FILE_FLUSH_LSN_OR_KEY_VERSION,
+		       8);
+
 		ut_a(!memcmp(FIL_PAGE_TYPE + page,
 			     FIL_PAGE_TYPE + page_zip->data,
 			     PAGE_HEADER - FIL_PAGE_TYPE));
